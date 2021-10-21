@@ -6,8 +6,11 @@ import hw10.family.People.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FamilyService implements Services {
     public FamilyDAO<Family> dao;
@@ -20,53 +23,37 @@ public class FamilyService implements Services {
 
     public void displayAllFamilies() {
         System.out.println("all families to screen: ");
-        List<Family> f = dao.getAllFamilies();
-        System.out.println(f);
+        dao.getAllFamilies().forEach(System.out::println);
     }
 
     ;
 
-    public List<Family> getFamiliesBiggerThan(int num) {
+    public Optional<List<Family>> getFamiliesBiggerThan(int num) {
+        if (num <= 0) return Optional.empty();
         System.out.println("FamiliesBiggerThan " + num + " :");
-        List<Family> listFam = dao.getAllFamilies();
-        List<Family> result = new ArrayList<>();
-        for (Family f : listFam) {
-            if (f.getChildren().size() + 2 > num) {
-                result.add(f);
-                System.out.println(result.toString());
-                return result;
-            }
-        }
-        return listFam;
+        List<Family> listFam =
+                dao.getAllFamilies().stream()
+                        .filter(f -> f.getChildren().size() + 2 > num)
+                        .collect(Collectors.toList());
+        listFam.forEach(System.out::println);
+        return Optional.of(listFam);
     }
 
-    ;
-
-    public List<Family> getFamiliesLessThan(int num) {
+    public Optional<List<Family>> getFamiliesLessThan(int num) {
+        if (num <= 0) return Optional.empty();
         System.out.println("FamiliesLessThan " + num + " :");
-        List<Family> listFam = dao.getAllFamilies();
-        List<Family> result = new ArrayList<>();
-        for (Family f : listFam) {
-            if (f.getChildren().size() + 2 < num) {
-                result.add(f);
-            }
-        }
-        System.out.println(result.toString());
-        return result;
+        List<Family> listFam = dao.getAllFamilies().stream()
+                .filter(f -> (f.getChildren().size() + 2 < num))
+                .collect(Collectors.toList());
+        listFam.stream().forEach(System.out::println);
+        return Optional.of(listFam);
     }
 
     public int countFamiliesWithMemberNumber(int num) {
-        if (num <= 1 ) return -1;
-        System.out.println("FamiliesWithMemberNumber " + num + " :");
-        List<Family> listFam = dao.getAllFamilies();
-        List<Family> result = new ArrayList<>();
-        for (Family f : listFam) {
-            if (f.getChildren().size() + 2 == num) {
-                result.add(f);
-            }
-        }
-        System.out.println(result.toString());
-        return result.size();
+        if (num <= 1) return -1;
+        System.out.println("now counting FamiliesWithMemberNumber " + num + " ....");
+        return (int) dao.getAllFamilies().stream().filter(f -> f.getChildren().size() + 2 == num)
+                .count();
     }
 
     public boolean createNewFamily(String dadName, String momName, String lastName,
@@ -109,7 +96,7 @@ public class FamilyService implements Services {
         rndSex = random.nextInt(2);
         birthYear = random.nextInt(10) + 2010;
         birthMonth = random.nextInt(12) + 1;
-        birthDay = random.nextInt(28)+1;
+        birthDay = random.nextInt(28) + 1;
         sex = (rndSex == 0) ? Sex.MASCULINE : Sex.FEMININE;
         babyName = GenerateRandomName.get(sex);
         LocalDate birthDate = LocalDate.of(birthYear, birthMonth, birthDay);
@@ -137,21 +124,23 @@ public class FamilyService implements Services {
 
 
     public boolean deleteAllChildrenOlderThen(int age) {
-//        if (age <= 0) return false;
-//        List<Family> families = dao.getAllFamilies();
-//        int yearNow = LocalDate.now().getYear();
-//        for (int i = 0; i < families.size(); i++) {
-//            for (int j = 0; j < families.get(i).getChildren().size(); j++) {
-//                int birthYear = families.get(i).getChildren().get(j).getBirthDate();
-//                if (yearNow - birthYear > age) {
-//                    System.out.println("this child is: " + (yearNow - birthYear) + " years old and must be deleted!");
-//                    System.out.println("deleting: " + families.get(i).getChildren().get(j));
-//                    dao.deleteChild(i, j);
-//                }
-//            }
-//        }
-//        System.out.println("after removal of children aged over " + age + " years old: ");
-//        System.out.println(dao.getAllFamilies());
+        if (age <= 0) return false;
+        List<Family> families = dao.getAllFamilies();
+        int yearNow = LocalDate.now().getYear();
+        IntStream.range(0, families.size()).forEach(famIndx ->
+                {
+                    IntStream.range(0, families.get(famIndx).getChildren().size()).forEach(chidIndex -> {
+                        int birthYear = families.get(famIndx).getChildren().get(chidIndex).getBirthDate().getYear();
+                        if (yearNow - birthYear > age) {
+                            System.out.println("this child is: " + (yearNow - birthYear) + " years old and must be deleted!");
+                            System.out.println("deleting: " + families.get(famIndx).getChildren().get(chidIndex));
+                            dao.deleteChild(famIndx, chidIndex);
+                        }
+                    }); //close chidIndex range
+                } //close famIndx range
+        );
+        System.out.println("after removal of children aged over " + age + " years old: ");
+        System.out.println(dao.getAllFamilies());
         return true;
     }
 
@@ -163,7 +152,7 @@ public class FamilyService implements Services {
 
     public Family getFamilyById(int id) {
         Family family = dao.getAllFamilies().get(id);
-        System.out.println("family by id " + id + family );
+        System.out.println("family by id " + id + family);
         return family;
     }
 

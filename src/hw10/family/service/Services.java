@@ -6,13 +6,14 @@ import hw10.family.People.Human;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface Services {
 
     //-получим от FamilyDAO:   List<Family> getAllFamilies();//получить список всех семей
     void displayAllFamilies(); //вывести на экран все семьи (в индексированном списке) со всеми членами семьи.
-    List<Family> getFamiliesBiggerThan(int num);//найти семьи с количеством людей больше чем (принимает количество человек и возвращает все семьи где количество людей больше чем указанное); выводит информацию на экран.
-    List<Family> getFamiliesLessThan(int num);//найти семьи с количеством людей меньше чем (принимает количество человек и возвращает все семьи где количество людей меньше чем указанное); выводит информацию на экран.
+    Optional<List<Family>> getFamiliesBiggerThan(int num);//найти семьи с количеством людей больше чем (принимает количество человек и возвращает все семьи где количество людей больше чем указанное); выводит информацию на экран.
+    Optional<List<Family>>  getFamiliesLessThan(int num);//найти семьи с количеством людей меньше чем (принимает количество человек и возвращает все семьи где количество людей меньше чем указанное); выводит информацию на экран.
     int countFamiliesWithMemberNumber(int num);//подсчитать число семей с количеством людей равное переданному числу.
     boolean createNewFamily(String dadName, String momName, String lastName,
                             LocalDate dadBirthYear, LocalDate momBirthYear, int ownChildren, int adoptedChildren);//создать новую семью (принимает 2 параметра типа Human) - создает новую семью, сохраняет в БД.
