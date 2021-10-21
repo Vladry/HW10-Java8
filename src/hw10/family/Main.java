@@ -61,14 +61,7 @@ public class Main {
                     dadBirthDate, momBirthDate, amntOwn, amntAdopted);
         }
 
-
-        // проверка метода создания животных и метода получения семьи по ID:
-        controller.FamilyService.addPet(1, new Dog("Dog_Fam1"));
-        controller.FamilyService.addPet(2, new DomesticCat("Cat_Fam2"));
-        controller.FamilyService.addPet(3, new Fish("Fish_Fam3"));
-        controller.FamilyService.getFamilyById(1);
-        controller.FamilyService.getFamilyById(2);
-        controller.FamilyService.getFamilyById(3);
+        controller.doControl();
     }
 }
 

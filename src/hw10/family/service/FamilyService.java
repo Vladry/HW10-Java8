@@ -129,7 +129,7 @@ public class FamilyService implements Services {
         int yearNow = LocalDate.now().getYear();
         IntStream.range(0, families.size()).forEach(famIndx ->
                 {
-                    IntStream.range(0, families.get(famIndx).getChildren().size()).forEach(chidIndex -> {
+                    IntStream.range(0, families.get(famIndx).getChildren().size()  ).forEach(chidIndex -> {
                         int birthYear = families.get(famIndx).getChildren().get(chidIndex).getBirthDate().getYear();
                         if (yearNow - birthYear > age) {
                             System.out.println("this child is: " + (yearNow - birthYear) + " years old and must be deleted!");
